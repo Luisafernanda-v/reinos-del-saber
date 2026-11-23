@@ -341,7 +341,7 @@ El enunciado pide un PDF con el nombre y el porqué de su elección, la descripc
 
 - [ ] Exportar la propuesta a PDF y comprobar que incluya las 2 imágenes.
 - [ ] Enviar el PDF al tutor.
-- [ ] Instalar el JDK 21 y Maven en cada equipo, siguiendo el README, y comprobar que `mvn javafx:run` abra la ventana.
+- [ ] Instalar Git, el JDK 21, Maven e IntelliJ IDEA en cada equipo, siguiendo el README, y comprobar que `mvn javafx:run` abra la ventana.
 
 **Se cierra cuando** el PDF esté enviado y las observaciones del tutor estén incorporadas en la propuesta y en esta guía. Mientras llega su respuesta, se puede avanzar con el mapa y los retos.
 
