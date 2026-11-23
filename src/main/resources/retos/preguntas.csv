@@ -1,0 +1,37 @@
+pais;nivel;enunciado;correcta;incorrecta1;incorrecta2;incorrecta3
+NUMEROS;FACIL;¿Cuánto es 7 + 5?;12;9;16;20
+NUMEROS;FACIL;¿Cuánto es 15 - 6?;9;4;13;18
+NUMEROS;FACIL;¿Cuánto es 5 × 3?;15;8;20;25
+NUMEROS;FACIL;¿Cuánto es 10 × 2?;20;12;30;100
+NUMEROS;MEDIO;¿Cuánto es 48 + 35?;83;73;85;93
+NUMEROS;MEDIO;¿Cuánto es 92 - 57?;35;45;33;25
+NUMEROS;MEDIO;¿Cuánto es 7 × 8?;56;54;48;64
+NUMEROS;MEDIO;¿Cuánto es 6 × 9?;54;56;45;63
+NUMEROS;DIFICIL;¿Cuánto es 47 × 6?;282;242;272;292
+NUMEROS;DIFICIL;¿Cuánto es 386 + 457?;843;833;853;743
+NUMEROS;DIFICIL;¿Cuánto es 704 - 268?;436;446;536;426
+NUMEROS;DIFICIL;¿Cuánto es 58 × 7?;406;356;416;396
+IDIOMAS;FACIL;¿Cómo se dice “perro” en inglés?;dog;house;green;eat
+IDIOMAS;FACIL;¿Qué significa “cat” en español?;gato;mesa;azul;correr
+IDIOMAS;FACIL;¿Cómo se dice “agua” en inglés?;water;chair;happy;sleep
+IDIOMAS;FACIL;¿Qué significa “red” en español?;rojo;libro;casa;saltar
+IDIOMAS;MEDIO;¿Cómo se dice “ventana” en inglés?;window;door;wall;floor
+IDIOMAS;MEDIO;¿Qué significa “kitchen” en español?;cocina;sala;baño;habitación
+IDIOMAS;MEDIO;¿Cómo se dice “cumpleaños” en inglés?;birthday;holiday;weekend;wedding
+IDIOMAS;MEDIO;¿Qué significa “tired” en español?;cansado;aburrido;enfermo;hambriento
+IDIOMAS;DIFICIL;¿Cómo se dice “umbral” en inglés?;threshold;thrust;throne;thorough
+IDIOMAS;DIFICIL;¿Qué significa “thorough” en español?;minucioso;a través;aunque;pensamiento
+IDIOMAS;DIFICIL;¿Cómo se dice “desafiante” en inglés?;challenging;changing;charming;chasing
+IDIOMAS;DIFICIL;¿Qué significa “eerie” en español?;inquietante;temprano;fácil;oído
+PALABRAS;FACIL;¿Cuál es un sinónimo de “feliz”?;alegre;triste;mesa;nube
+PALABRAS;FACIL;¿Cuál es un antónimo de “grande”?;pequeño;perro;azul;ventana
+PALABRAS;FACIL;¿Cuál es un sinónimo de “bonito”?;lindo;silla;correr;nube
+PALABRAS;FACIL;¿Cuál es un antónimo de “caliente”?;frío;casa;verde;libro
+PALABRAS;MEDIO;¿Cuál es un antónimo de “generoso”?;tacaño;amable;valiente;alegre
+PALABRAS;MEDIO;¿Cuál es un sinónimo de “rápido”?;veloz;lento;fuerte;tranquilo
+PALABRAS;MEDIO;¿Cuál es un antónimo de “valiente”?;cobarde;generoso;tranquilo;honesto
+PALABRAS;MEDIO;¿Cuál es un sinónimo de “enojado”?;furioso;cansado;asustado;confundido
+PALABRAS;DIFICIL;¿Cuál es un sinónimo de “efímero”?;pasajero;eterno;efusivo;etéreo
+PALABRAS;DIFICIL;¿Cuál es un antónimo de “austero”?;ostentoso;sobrio;estricto;modesto
+PALABRAS;DIFICIL;¿Cuál es un sinónimo de “perspicaz”?;sagaz;persistente;perplejo;pertinente
+PALABRAS;DIFICIL;¿Cuál es un antónimo de “diáfano”?;turbio;diagonal;claro;transparente

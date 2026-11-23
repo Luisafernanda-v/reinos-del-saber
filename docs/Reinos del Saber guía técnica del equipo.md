@@ -51,7 +51,7 @@ El modelo tiene 20 tipos en 4 paquetes y se puede ejecutar y probar sin abrir la
 | `Pais` (enum) | `NUMEROS`, `IDIOMAS`, `PALABRAS` | Ninguno |
 | `Terreno` (enum) | `TIERRA(1)`, `AGUA(2)` | `getDefensaBase()` |
 | `Casilla` | `coordenada`, `pais`, `terreno`, `esSede` | `conquistar(pais)`, `getDefensa()` |
-| `Mapa` | `Map<Coordenada, Casilla>` | `getCasilla(c)`, `adyacentes(c)`, `casillasDePais(pais)`, `esFrontera(c, pais)`, `distancia(desde, hasta)` (BFS) |
+| `Mapa` | `Map<Coordenada, Casilla>` | `getCasilla(c)`, `getCasillas()`, `adyacentes(c)`, `casillasDePais(pais)`, `getSede(pais)`, `esFrontera(c, pais)`, `distancia(desde, hasta)` (BFS) |
 | `CargadorMapa` | Ninguno | `cargar(InputStream)` |
 
 ### modelo.retos
@@ -59,14 +59,14 @@ El modelo tiene 20 tipos en 4 paquetes y se puede ejecutar y probar sin abrir la
 | Tipo | Atributos | Métodos principales |
 | --- | --- | --- |
 | `Nivel` (enum) | `FACIL(30)`, `MEDIO(20)`, `DIFICIL(15)` | `getSegundos()` |
-| `Reto` (record) | `pais`, `nivel`, `enunciado`, `opciones`, `indiceCorrecto` | `esCorrecta(indice)`, `getRespuestaCorrecta()`, `barajado(random)` |
+| `Reto` (record) | `pais`, `nivel`, `enunciado`, `opciones`, `indiceCorrecto` (de 0 a 3) | `esCorrecta(indice)`, `getRespuestaCorrecta()`, `barajado(random)` |
 | `BancoRetos` | `retos`, `ultimo`, `random` | `cargar(InputStream)`, `agregar(reto)`, `obtener(pais, nivel)` |
 
 ### modelo.jugador
 
 | Tipo | Atributos | Métodos principales |
 | --- | --- | --- |
-| `Jugador` (abstracta) | `nombre`, `pais`, `sede` | `esHumano()` |
+| `Jugador` (abstracta) | `nombre`, `pais`, `sede` | `esHumano()`, `asignarPais(pais, sede)`: solo una vez, al iniciar la partida |
 | `JugadorHumano` | `nivel` | `getNivel()` |
 | `JugadorCPU` | `dificultad`, `estrategia` | `simularRespuesta(random)`, `elegirCasilla(partida)` |
 | `DificultadCPU` (enum) | `FACIL(0.5)`, `MEDIA(0.7)`, `DIFICIL(0.9)` | `getProbabilidadAcierto()` |
@@ -77,17 +77,19 @@ El modelo tiene 20 tipos en 4 paquetes y se puede ejecutar y probar sin abrir la
 
 | Tipo | Atributos | Métodos principales |
 | --- | --- | --- |
-| `ConfiguracionPartida` | Humanos, niveles, dificultad de CPU | `validar()`: exige datos completos y nombres sin repetir |
-| `Partida` | Mapa, jugadores, ronda, turno, estado, acciones restantes, ganador | `iniciar()`, `atacar(casilla)`, `responder(indice)`, `tiempoAgotado()`, `ejecutarAccionCPU()`, `casillasAtacables()`, `getRetoActual()`, `getGanador()`, `casillasDe(jugador)` |
+| `ConfiguracionPartida` | Humanos, niveles, dificultad de CPU | `agregarHumano(nombre, nivel)`, `setDificultadCPU(dificultad)`, `validar()`: exige datos completos y nombres sin repetir, `esValida()`, `crearJugadores()` |
+| `Partida` | Mapa, jugadores, ronda, turno, estado, acciones restantes, ganador | `iniciar()`, `atacar(casilla)`, `responder(indice)`, `tiempoAgotado()`, `ejecutarAccionCPU()`, `casillasAtacables()`, `casillasAtacablesPor(jugador)`, `getRetoActual()`, `getSerie()`, `getGanador()`, `casillasDe(jugador)` |
 | `EstadoPartida` (enum) | Estados del flujo | Ninguno |
-| `SerieRetos` | `casilla`, `requeridos`, `aciertos`, `retoActual` | `registrarAcierto()`, `estaCompleta()` |
-| `TamanoCiudad` (enum) | `ALDEA(2)`, `PUEBLO(3)`, `CIUDAD(4)` | `desde(casillas)`, `getAcciones()` |
+| `SerieRetos` | `casilla`, `requeridos`, `aciertos`, `retoActual` | `registrarAcierto()` y `setRetoActual(reto)`, que solo usa `Partida`; `estaCompleta()` |
+| `TamanoCiudad` (enum) | `ALDEA(2)`, `PUEBLO(3)`, `CIUDAD(4)` | `desde(casillas)`, `getAcciones()`, `getCasillasMinimas()` |
 
 Los retos no se guardan por casilla. `Partida` pide uno nuevo a `BancoRetos` en cada intento, según el nivel de quien responde. Los puestos de CPU se llaman `CPU 1` y `CPU 2`, y esos nombres quedan reservados.
 
+La interfaz puede consultar la serie en curso con `getSerie()`, pero no modificarla: `registrarAcierto()` y `setRetoActual(reto)` solo son visibles dentro del paquete `modelo.partida`. Del mismo modo, `asignarPais` rechaza una segunda llamada, así que el país de un jugador no cambia durante la partida.
+
 ## Flujo de la partida
 
-`Partida` funciona como una máquina de 4 estados, y los métodos que modifican la partida rechazan con `IllegalStateException` las llamadas que no correspondan al estado actual.
+`Partida` funciona como una máquina de 4 estados, y los métodos que modifican la partida rechazan con `IllegalStateException` las llamadas que no correspondan al estado actual. Antes de `iniciar()` la partida no tiene estado (`getEstado()` devuelve `null`) y solo acepta esa llamada.
 
 | Estado | Cuándo aplica | Qué lo cambia |
 | --- | --- | --- |
@@ -109,12 +111,12 @@ Cada fila de `retos/preguntas.csv` es una pregunta completa, con su enunciado, l
 ```csv
 pais;nivel;enunciado;correcta;incorrecta1;incorrecta2;incorrecta3
 NUMEROS;FACIL;¿Cuánto es 7 + 5?;12;9;16;20
-IDIOMAS;FACIL;¿Cómo se dice “perro” en inglés?;dog;cat;bird;fish
-IDIOMAS;FACIL;¿Qué significa “dog” en español?;perro;gato;pájaro;pez
+IDIOMAS;FACIL;¿Cómo se dice “perro” en inglés?;dog;house;green;eat
+IDIOMAS;FACIL;¿Qué significa “dog” en español?;perro;mesa;azul;correr
 PALABRAS;FACIL;¿Cuál es un sinónimo de “feliz”?;alegre;triste;mesa;nube
 ```
 
-El archivo se lee en UTF-8 y el `;` queda reservado como separador. Los enunciados usan comillas tipográficas (“ ”), porque las rectas se alteran al guardar el archivo desde Excel. Las filas de Idiomas deben cubrir los dos sentidos de la traducción.
+El archivo se lee en UTF-8 y el `;` queda reservado como separador. Si se edita en Excel, hay que guardarlo con el tipo “CSV UTF-8”: el tipo CSV normal usa otra codificación, y las tildes, la ñ y los signos ¿ ¡ aparecerían como `�` en el juego sin que ninguna prueba falle. Los enunciados usan comillas tipográficas (“ ”), porque las rectas se alteran al guardar el archivo desde Excel. Las filas de Idiomas deben cubrir los dos sentidos de la traducción.
 
 `BancoRetos` elige los retos al azar. Una pregunta puede repetirse durante la partida, pero no dos veces seguidas si hay otra disponible, para cumplir la regla de que cada intento reciba un reto nuevo. Para eso guarda la última fila entregada. Cada vez que entrega un reto, baraja las opciones para que la correcta cambie de posición.
 
@@ -208,7 +210,7 @@ El panel lateral `PanelRetoView` tiene 5 estados:
 | Después de fallar | Opción correcta en verde, opción elegida en rojo si la hubo y botón Continuar |
 | Turno de CPU | Mensaje “CPU ataca…” |
 
-Cancelar no consume la acción. Comenzar llama a `atacar(casilla)` e inicia el temporizador. Las teclas 1 a 4 equivalen a las opciones, y la barra de tiempo se vuelve roja en los últimos 5 segundos.
+Cancelar no consume la acción. Comenzar llama a `atacar(casilla)` e inicia el temporizador. Las teclas 1 a 4 equivalen a las opciones, que en el modelo se numeran de 0 a 3, y la barra de tiempo se vuelve roja en los últimos 5 segundos.
 
 Si la respuesta es correcta, la partida sigue de inmediato con el siguiente reto de la serie o con la casilla conquistada. Si hay un fallo o se agota el tiempo, el panel pasa a Después de fallar y espera a que el jugador pulse Continuar. `responder(indice)` devuelve si hubo acierto, y `PartidaController` guarda el reto actual antes de llamarlo para poder mostrar la respuesta correcta.
 
@@ -216,7 +218,7 @@ El temporizador usa un `Timeline` que se reinicia con cada reto, y al llegar a c
 
 Los clics en el mapa solo se atienden en Sin casilla y Vista previa, y las opciones y las teclas 1 a 4, solo en Reto, porque `Partida` rechaza las llamadas fuera de estado. Además, el panel ignora las respuestas durante los primeros 300 ms de cada reto: como el siguiente aparece de inmediato, un doble clic o una tecla repetida lo contestaría sin querer.
 
-Cuando `PartidaController` encuentra el estado `TURNO_CPU`, agenda `ejecutarAccionCPU()` con un `PauseTransition` de 1.200 ms, con la casilla atacada resaltada en el mapa. Nunca se usa `Thread.sleep` en el hilo de JavaFX.
+Cuando `PartidaController` encuentra el estado `TURNO_CPU`, agenda `ejecutarAccionCPU()` con un `PauseTransition` de 1.200 ms, con la casilla atacada resaltada en el mapa. `ejecutarAccionCPU()` devuelve esa casilla. Nunca se usa `Thread.sleep` en el hilo de JavaFX.
 
 ### Cómo armar las pantallas
 
@@ -360,9 +362,9 @@ Los pasos 1, 2 y 3 se pueden hacer al mismo tiempo. `Partida` es el trabajo más
 
 Antes de subir la entrega:
 
-- [ ] Cada clase, atributo, constante de enumeración y método del modelo tiene su comentario `/** ... */`, incluidos los privados.
-- [ ] `mvn test` pasa y ninguna clase de `modelo` importa JavaFX.
-- [ ] `mvn javadoc:javadoc` genera la documentación en `target/reports/apidocs/`.
+- [x] Cada clase, atributo, constante de enumeración y método del modelo tiene su comentario `/** ... */`, incluidos los privados.
+- [x] `mvn test` pasa y ninguna clase de `modelo` importa JavaFX.
+- [x] `mvn javadoc:javadoc` genera la documentación en `target/reports/apidocs/`.
 - [ ] El archivo subido incluye `pom.xml`, `src/main/java/com/reinos/modelo/`, `src/main/resources/`, `src/test/` y la carpeta del Javadoc.
 
 **Se cierra cuando** se pueda jugar una partida completa desde las pruebas, sin abrir la interfaz.

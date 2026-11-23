@@ -4,6 +4,10 @@ import javafx.application.Application;
 
 /** Punto de entrada de la aplicación. */
 public final class Launcher {
+    /**
+     * Evita que se creen instancias, porque la clase solo tiene el método
+     * {@code main}.
+     */
     private Launcher() { }
 
     /**
